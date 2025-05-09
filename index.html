@@ -1,58 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💻 PROJETO_WEB</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        li:hover {
+            background-color: #f9f9f9;
+            transform: translateY(-2px);
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
 </head>
 
 <body>
-    <a href="/cadastro.html">Link Cadastro Cliente</a>
-
-    <a href="/produtos.html">Link Produtos Disponíveis</a>
-
-    <a href="/compra.html">Link Compra Cliente</a>
-
-    <a href="/Fcompra.html">Link Finalização Compra Cliente</a>
+    <a href="/cadastro.html">Cadastro de pessoa e produto</a>
+    <a href="/produtosEcadastro.html">Pessoas e Produtos cadastrados</a>
 
     <h2>TRABALHO DO TERE</h2>
     <ul id="minhalista">
-
-
+        <!-- Os itens serão adicionados dinamicamente aqui -->
     </ul>
+
     <script>
         async function buscaDados() {
-            const resposta = await fetch("http://localhost:8000/clientes")
-            console.log(resposta)
+            const resposta = await fetch("http://localhost:8000/pessoa");
+            console.log(resposta);
 
             if (resposta.status === 200) {
+                const dados = await resposta.json();
+                console.log(dados);
 
-                const dados = await resposta.json()
-                console.log(dados)
-                console.log(dados[0].nome)
-
-                const ul = document.getElementById("minhalista")
+                const ul = document.getElementById("minhalista");
 
                 for (let i = 0; i < dados.length; i++) {
                     const element = dados[i];
-                    const novoLi = document.createElement("li")
-                    novoLi.innerText = element.nome
-                    ul.appendChild(novoLi)
+                    const novoLi = document.createElement("li");
+                    novoLi.innerText = element.nome;
+                    ul.appendChild(novoLi);
                 }
-
             } else {
                 if (resposta.status === 400) {
-                    const dados = await resposta.json()
-                    alert(dados.mensagem)
+                    const dados = await resposta.json();
+                    alert(dados.mensagem);
                 } else {
-                    alert("❌ Erro desconhecido ❓")
+                    alert("❌ Erro desconhecido ❓");
                 }
             }
-
         }
-        buscaDados()
-
+        buscaDados();
     </script>
 </body>
 

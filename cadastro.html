@@ -8,72 +8,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📁 CADASTRO_CLIENTE</title>
+
+    <style>
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+
+            font-weight: bold;
+            font-size: 2em;
+
+
+
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 
 <body>
+    <h1>📁 CADASTRO CLIENTE E PRODUTO</h1>
     <form onsubmit="event.preventDefault();trataform()">
 
         <label for="id">🔸-ID:</label>
-        <input type="text" id="id" name="id">
+        <input type="text" id="id" name="id" required>
 
         <label for="nome">👤-NOME:</label>
-        <input type="text" id="nome" name="id">
+        <input type="text" id="nome" name="id" required>
 
         <label for="nome">👤-SOBRENOME:</label>
-        <input type="text" id="sobrenome" name="id">
+        <input type="text" id="sobrenome" name="id" required>
 
         <label for="nome">🏢-NOME DA EMPRESA:</label>
-        <input type="text" id="empresa" name="id">
+        <input type="text" id="empresa" name="id" required>
 
         <input type="submit" value="Cadastrar">
 
     </form>
+
+    <form onsubmit="event.preventDefault();trataformItens()">
+
+        <label for="itemId">🔸-ID DO ITEM:</label>
+        <input type="text" id="itemId" name="itemId" required>
+
+        <label for="itemNome">📦-NOME DO ITEM:</label>
+        <input type="text" id="itemNome" name="itemNome" required>
+
+        <label for="itemDescricao">📝-DESCRIÇÃO:</label>
+        <input type="text" id="itemDescricao" name="itemDescricao" required>
+
+        <label for="itemPreco">💲-PREÇO:</label>
+        <input type="text" id="itemPreco" name="itemPreco" required>
+
+        <input type="submit" value="Cadastrar Item">
+
+    </form>
+
     <script>
         async function trataform() {
-            const inputId = document.getElementById("id")
-            const inputNome = document.getElementById("nome")
-            const inputSobrenome = document.getElementById("sobrenome")
-            const inputEmpresa = document.getElementById("empresa")
-            const id = inputId.value
-            const nome = inputNome.value
+            const inputId = document.getElementById("id");
+            const inputNome = document.getElementById("nome");
+            const inputSobrenome = document.getElementById("sobrenome");
+            const inputEmpresa = document.getElementById("empresa");
+
+            const id = inputId.value.trim();
+            const nome = inputNome.value.trim();
+            const sobrenome = inputSobrenome.value.trim();
+            const empresa = inputEmpresa.value.trim();
+
+            if (!id || !nome || !sobrenome || !empresa) {
+                alert("❌ Todos os campos do formulário de pessoa são obrigatórios!");
+                return;
+            }
 
             const objCliente = {
                 id: id,
                 nome: nome,
                 sobrenome: sobrenome,
                 empresa: empresa
-            }
+            };
+
             try {
-            const resposta = await fetch("http://localhost:8000/clientes", {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: "POST",
-                body: JSON.stringify(objCliente)
-            })
+                const resposta = await fetch("http://localhost:8000/pessoa", { // Corrigido para o endpoint correto
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify(objCliente)
+                });
 
-            if(resposta.status===200){
-                alert("Cliente cadastrado com sucesso! ✅")
+                if (resposta.status === 200) {
+                    alert("Cliente cadastrado com sucesso! ✅");
+                } else if (resposta.status === 400) {
+                    const dados = await resposta.json();
+                    alert(`❌ ERRO DO LADO DO BACKEND: \n ${dados.mensagem}`);
+                } else if (resposta.status === 404) {
+                    alert("❌ ERRO NÃO IDENTIFICADO ❓");
+                }
+            } catch (erro) {
+                alert("❌ ERRO: Erro na requisição do fetch\n" + "Você ligou o BACKEND com npm run dev?");
             }
-
-            
-            if(resposta.status===400){
-                const dados = await resposta.json ()
-                alert(`❌ ERRO DO LADO DO BACKEND: "\n ${dados.mensagem}`)
-            }
-            
-            
-            if(resposta.status===404){
-                alert("❌ ERRO NÃO IDENTIFICADO ❓")
-            }
-            
-
-        }catch (erro){
-            alert ("❌ ERRO: Erro na requisição do fetch\n" + "Você ligou o BACKEND com npm run dev?")
         }
-    }
-    
 
+        async function trataformItens() {
+            const inputItemId = document.getElementById("itemId");
+            const inputItemNome = document.getElementById("itemNome");
+            const inputItemDescricao = document.getElementById("itemDescricao");
+            const inputItemPreco = document.getElementById("itemPreco");
+
+            const itemId = inputItemId.value.trim();
+            const itemNome = inputItemNome.value.trim();
+            const itemDescricao = inputItemDescricao.value.trim();
+            const itemPreco = inputItemPreco.value.trim();
+
+            if (!itemId || !itemNome || !itemDescricao || !itemPreco) {
+                alert("❌ Todos os campos do formulário de produto são obrigatórios!");
+                return;
+            }
+
+            const objItem = {
+                id: itemId,
+                nome: itemNome,
+                descricao: itemDescricao,
+                preco: itemPreco
+            };
+
+            try {
+                const resposta = await fetch("http://localhost:8000/produto", { // Alterado para o endpoint correto
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify(objItem)
+                });
+
+                if (resposta.status === 200) {
+                    alert("Item cadastrado com sucesso! ✅");
+                } else if (resposta.status === 400) {
+                    const dados = await resposta.json();
+                    alert(`❌ ERRO DO LADO DO BACKEND: \n ${dados.mensagem}`);
+                } else if (resposta.status === 404) {
+                    alert("❌ ERRO NÃO IDENTIFICADO ❓");
+                }
+            } catch (erro) {
+                alert("❌ ERRO: Erro na requisição do fetch\n" + "Você ligou o BACKEND com npm run dev?");
+            }
+        }
     </script>
 </body>
 
